@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .hidden { display: none; }
+        .tabs { margin: 20px 0; }
+        .tab { cursor: pointer; padding: 10px; border: 1px solid #ccc; margin-right: 5px; }
+        .content { border: 1px solid #ccc; padding: 15px; }
+        body { font-family: Arial, sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="email">Email</label>
+            <input type="text" id="email" placeholder="Enter email" required>
+    
+            <label for="phonenumber">Phone Number</label>
+            <input type="text" id="phonenumber" placeholder="Enter phone number" required>
+    
+            <button type="submit">Login</button>
+        </form>
+    </div>
+    <div id="tabsContainer" class="hidden">
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('profile')">Profile</div>
+            <div class="tab" onclick="showTab('timeline')">Timeline</div>
+        </div>
+        <div id="profile" class="content">
+            <h2>Your Profile</h2>
+            <p>This is your profile content.</p>
+        </div>
+        <div id="timeline" class="content hidden">
+            <h2>Your Timeline</h2>
+            <p>This is your timeline content.</p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            let enteredEmail = document.getElementById('email').value;
+            let enteredPhone = document.getElementById('phonenumber').value;
+    
+            if (enteredEmail && enteredPhone) {
+                fetch('https://jsonplaceholder.typicode.com/users')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Assuming you find a user matching the input
+                        let user = data.find(user => user.email === enteredEmail && user.phone === enteredPhone);
+    
+                        if (user) {
+                            document.getElementById('loginContainer').style.display = 'none';
+                            document.getElementById('tabsContainer').style.display = 'block';
+                        } else {
+                            alert('Invalid email or phone number.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data:', error);
+                        alert('An error occurred while logging in.');
+                    });
+            } else {
+                alert('Please enter both email and phone number.');
+            }
+        });
+    
+        function showTab(tabName) {
+            const contents = document.getElementsByClassName('content');
+            const tabs = document.getElementsByClassName('tab');
+    
+            // Loop through contents and hide them
+            for (let i = 0; i < contents.length; i++) {
+                contents[i].style.display = 'none';
+            }
+    
+            // Loop through tabs and remove the 'active' class
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+    
+            // Show the selected tab's content and make the tab active
+            document.getElementById(tabName).style.display = 'block';
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+        }
+    </script>
+    
+</body>
+</html>
